@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import http from 'node:http';
+import { researchRegisteredVenues } from './integrations/official-source-research.mjs';
 import { timingSafeEqual } from 'node:crypto';
 import { discoverEstablishmentMedia, integrationStatus, resolvePlacesPhoto } from './integrations/establishment-media.mjs';
 const port = Number(process.env.PORT || 3000);
@@ -21,6 +22,7 @@ const security={"content-security-policy":"default-src 'none'; script-src 'unsaf
 const server=http.createServer(async(req,res)=>{
   for(const [k,v] of Object.entries(security))res.setHeader(k,v);
   const url=new URL(req.url,'http://localhost');
+  if(req.method==='GET'&&url.pathname==='/api/venues/research'){try{return send(res,200,{venues:await researchRegisteredVenues(),mediaPolicy:'Candidates only. No automatic publication without rights verification.'})}catch(e){return send(res,502,{error:'Research unavailable'})}}
   if(req.method==='GET'&&url.pathname==='/health')return send(res,200,{ok:true,service:'sd-social'});
   if(req.method==='GET'&&(url.pathname==='/'||url.pathname==='/investigador')){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(url.pathname==='/' ? await readFile(new URL('./index.html',import.meta.url)) : html);}
   if(!rateLimit(req.socket.remoteAddress||'unknown'))return send(res,429,{error:'Too many requests'});
