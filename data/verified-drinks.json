@@ -6,18 +6,168 @@
         "name": "Cóctel JALAO",
         "description": "Ron blanco, ron de coco, licor de banana, jugo de piña y granadina.",
         "price": "RD$350",
-        "source": "https://jalao.do/"
+        "source": "https://jalao.do/",
+        "category": "Cócteles"
       },
       {
         "name": "El Mayimbe",
         "description": "Mojito de coco con menta, zumo de limón, ron blanco y soda.",
         "price": "RD$350",
-        "source": "https://jalao.do/"
+        "source": "https://jalao.do/",
+        "category": "Cócteles"
       },
       {
         "name": "Sangría JALAO",
         "description": "Sangría tinta, blanca o rosada.",
         "price": "RD$420",
+        "source": "https://jalao.do/",
+        "category": "Cócteles"
+      },
+      {
+        "name": "Yaniqueque",
+        "description": "Masa de trigo crujiente al estilo Boca Chica.",
+        "price": "RD$395",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Croquetas de yuca",
+        "description": "Cinco croquetas rellenas de queso amarillo.",
+        "price": "RD$435",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Pastelitos de la casa",
+        "description": "Masa de yuca con camarones a la criolla y pollo mechado.",
+        "price": "RD$495",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Croquetas de chivo",
+        "description": "Croquetas de chivo liniero.",
+        "price": "RD$550",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Quesadilla de chivo",
+        "description": "Chivo guisado, queso, guasacaca de cilantro y pico de gallo.",
+        "price": "RD$695",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Chicharrón de cerdo",
+        "description": "Acompañado de casabitos tostados.",
+        "price": "RD$795",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Tabla JALAO",
+        "description": "Para compartir: calamares, chicharrón, longaniza, carnita, yuca y pastelitos.",
+        "price": "RD$1995",
+        "category": "Entradas",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "La Bandera JALAO",
+        "description": "Res encebollada, chicharrón, longaniza, habichuelas, arroz, plátano maduro y aguacate.",
+        "price": "RD$850",
+        "category": "Platos principales",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Mofongo a la crema",
+        "description": "Mofongo con chicharrón, salsa de cuatro quesos y cerdo.",
+        "price": "RD$795",
+        "category": "Platos principales",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Cazuela de mariscos",
+        "description": "Camarones, calamar y chillo en salsa de coco.",
+        "price": "RD$1795",
+        "category": "Platos principales",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Camarones criollos",
+        "description": "Sofrito de tomate y tostones.",
+        "price": "RD$1195",
+        "category": "Platos principales",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Salmón a la parrilla",
+        "description": "Salmón con arroz blanco y vegetales al grill.",
+        "price": "RD$995",
+        "category": "Platos principales",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Ceviche con morir soñando",
+        "description": "Ceviche de camarones con morir soñando.",
+        "price": "RD$895",
+        "category": "Platos principales",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Majarete",
+        "description": "Postre de maíz tierno y canela.",
+        "price": "RD$250",
+        "category": "Postres",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Flan de coco",
+        "description": "Flan casero con coco.",
+        "price": "RD$250",
+        "category": "Postres",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Cinco leches",
+        "description": "Bizcocho bañado en cinco leches.",
+        "price": "RD$350",
+        "category": "Postres",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Coco horneado",
+        "description": "Postre tradicional de coco.",
+        "price": "RD$350",
+        "category": "Postres",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Pudín de pan y ciruela",
+        "description": "Pudín de pan con ciruela.",
+        "price": "RD$250",
+        "category": "Postres",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "El Arretao",
+        "description": "Ron imperial, jarabe de azúcar y angostura.",
+        "price": "RD$350",
+        "category": "Cócteles",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "El Abimbao",
+        "description": "Ron, ginebra, vodka, tequila, triple sec, cola y limón.",
+        "price": "RD$350",
+        "category": "Cócteles",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Mamajuana JALAO",
+        "description": "Mamajuana al estilo de la casa.",
+        "price": "RD$300",
+        "category": "Cócteles",
         "source": "https://jalao.do/"
       }
     ],
@@ -26,24 +176,126 @@
         "name": "Blue Hawaiian",
         "description": "Ron blanco, curaçao azul, piña, limón y crema de coco.",
         "price": "RD$600",
-        "source": "https://safezonerd.com/menu"
+        "source": "https://safezonerd.com/menu",
+        "category": "Cócteles"
       },
       {
         "name": "Mojito de chinola",
         "description": "Ron, limón, azúcar, chinola, menta y agua mineral con gas.",
         "price": "RD$300",
-        "source": "https://safezonerd.com/menu"
+        "source": "https://safezonerd.com/menu",
+        "category": "Cócteles"
       },
       {
         "name": "Piña colada",
         "description": "Ron blanco, crema de coco, zumo de piña y piña.",
         "price": "RD$400",
-        "source": "https://safezonerd.com/menu"
+        "source": "https://safezonerd.com/menu",
+        "category": "Cócteles"
       },
       {
         "name": "Dame Deo",
         "description": "Fireball, jugo de fresa y zumo de limón.",
         "price": "RD$500",
+        "source": "https://safezonerd.com/menu",
+        "category": "Cócteles"
+      },
+      {
+        "name": "Daiquirí",
+        "description": "Ron blanco, limón o lima y azúcar.",
+        "price": "RD$400",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Gin tonic",
+        "description": "Ginebra, tónica, hielo y limón.",
+        "price": "RD$450",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Margarita",
+        "description": "Tequila, triple seco, limón y sal.",
+        "price": "RD$400",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Mojito fresa",
+        "description": "Ron, limón, azúcar, fresa, menta y agua con gas.",
+        "price": "RD$300",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Mojito tradicional",
+        "description": "Ron, limón, azúcar, menta y agua con gas.",
+        "price": "RD$300",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Sangría",
+        "description": "Vino tinto seco, fruta y licor.",
+        "price": "RD$600",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Santo libre",
+        "description": "Ron, refresco de lima-limón y jugo de limón.",
+        "price": "RD$250",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Vodka tonic",
+        "description": "Vodka, tónica, hielo y limón.",
+        "price": "RD$300",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "White Russian",
+        "description": "Vodka, licor de café y nata líquida.",
+        "price": "RD$400",
+        "category": "Cócteles",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Presidente",
+        "description": "Cerveza embotellada.",
+        "price": "RD$250",
+        "category": "Cervezas",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Presidente Black",
+        "description": "Cerveza embotellada.",
+        "price": "RD$300",
+        "category": "Cervezas",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Corona",
+        "description": "Cerveza embotellada.",
+        "price": "RD$300",
+        "category": "Cervezas",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Heineken",
+        "description": "Cerveza embotellada.",
+        "price": "RD$350",
+        "category": "Cervezas",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Modelo",
+        "description": "Cerveza embotellada.",
+        "price": "RD$250",
+        "category": "Cervezas",
         "source": "https://safezonerd.com/menu"
       }
     ],
@@ -52,9 +304,59 @@
         "name": "De Color de Rosa",
         "description": "Martini con vodka macerado en fresas, puré de fresas, sirope de albahaca y zumo de limón.",
         "price": "RD$525",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora",
+        "category": "Cócteles"
+      },
+      {
+        "name": "Chicharrones Hasta La Tambora",
+        "description": "Chicharrones crujientes con casabe gratinado.",
+        "price": "RD$685",
+        "category": "Tapas",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Chimi de pierna Hasta La Tambora",
+        "description": "Tres mini chimis de pierna asada en BBQ, repollo y salsa de la casa.",
+        "price": "RD$495",
+        "category": "Tapas",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Quipes de res",
+        "description": "Cuatro quipes de res con salsa de cilantro.",
+        "price": "RD$495",
+        "category": "Tapas",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Bollitos de yuca",
+        "description": "Cuatro bollitos rellenos de queso con salsa de cilantro.",
+        "price": "RD$495",
+        "category": "Tapas",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Pickles Hasta La Tambora",
+        "description": "Baby pickles.",
+        "price": "RD$250",
+        "category": "Tapas",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Aceitunas Hasta La Tambora",
+        "description": "Aceitunas marinadas.",
+        "price": "RD$250",
+        "category": "Tapas",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Casabe gratinado",
+        "description": "Casabe gratinado con especias.",
+        "price": "RD$180",
+        "category": "Tapas",
         "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
       }
     ]
   },
-  "disclaimer": "Descriptions and prices transcribed from official websites; prices may change. Image references are illustrative unless explicitly sourced from the venue."
+  "disclaimer": "Productos, precios y descripciones de menús oficiales consultados; precios sujetos a cambios e impuestos. Las imágenes ilustrativas no representan necesariamente el plato servido por el local. No se inventan productos para locales sin menú verificable."
 }
