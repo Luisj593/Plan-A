@@ -5,7 +5,15 @@ const queries={
  'Cóctel JALAO':'cocktail drink',
  'Tacos':'tacos food',
  'Bao buns':'bao buns food',
- 'Cócteles artesanales':'cocktail drink'
+ 'Cócteles artesanales':'cocktail drink',
+ 'Cóctel JALAO':'tropical rum cocktail',
+ 'El Mayimbe':'coconut mojito',
+ 'Sangría JALAO':'sangria',
+ 'Blue Hawaiian':'blue hawaiian cocktail',
+ 'Mojito de chinola':'passion fruit mojito',
+ 'Piña colada':'pina colada cocktail',
+ 'Dame Deo':'strawberry cocktail',
+ 'De Color de Rosa':'strawberry martini'
 };
 const cache=new Map();
 export async function getDishImages(dish){
