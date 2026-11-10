@@ -16,7 +16,19 @@
       "logoUrl": null,
       "menuStatus": "pending-verification",
       "source": "business-search-2026-11-10",
-      "publicationStatus": "candidate"
+      "publicationStatus": "candidate",
+      "openingHours": {
+        "Lunes": "Cerrado",
+        "Martes": "17:00–02:00",
+        "Miércoles": "17:00–02:00",
+        "Jueves": "17:00–02:00",
+        "Viernes": "17:00–03:00",
+        "Sábado": "17:00–03:00",
+        "Domingo": "17:00–02:00"
+      },
+      "hoursSource": "Public business listings, consulted 2026-11-10; subject to change",
+      "menuUrl": "https://onnosdr.com/zona-colonial",
+      "menuLabel": "Ver oferta gastronómica en el sitio oficial"
     },
     {
       "id": "maps-seed-2",
@@ -32,7 +44,19 @@
       "logoUrl": null,
       "menuStatus": "pending-verification",
       "source": "business-search-2026-11-10",
-      "publicationStatus": "candidate"
+      "publicationStatus": "candidate",
+      "openingHours": {
+        "Lunes": "17:30–02:00",
+        "Martes": "17:30–02:00",
+        "Miércoles": "17:30–02:00",
+        "Jueves": "17:30–02:00",
+        "Viernes": "17:30–03:00",
+        "Sábado": "17:30–03:00",
+        "Domingo": "17:30–02:00"
+      },
+      "hoursSource": "Public business listings, consulted 2026-11-10; subject to change",
+      "menuUrl": "https://mosquitosocialclub.com/",
+      "menuLabel": "Consultar menú y cócteles en el sitio oficial"
     },
     {
       "id": "maps-seed-3",
@@ -48,7 +72,19 @@
       "logoUrl": null,
       "menuStatus": "pending-verification",
       "source": "business-search-2026-11-10",
-      "publicationStatus": "candidate"
+      "publicationStatus": "candidate",
+      "openingHours": {
+        "Lunes": "Cerrado",
+        "Martes": "Cerrado",
+        "Miércoles": "19:00–01:00",
+        "Jueves": "19:00–01:00",
+        "Viernes": "19:00–03:00",
+        "Sábado": "19:00–03:00",
+        "Domingo": "19:00–02:00"
+      },
+      "hoursSource": "Public business listings, consulted 2026-11-10; subject to change",
+      "menuUrl": "https://es.restaurantguru.com/75-Grados-Santo-Domingo-2/menu",
+      "menuLabel": "Consultar menú publicado por terceros (puede estar desactualizado)"
     },
     {
       "id": "maps-seed-4",
@@ -64,7 +100,17 @@
       "logoUrl": null,
       "menuStatus": "pending-verification",
       "source": "business-search-2026-11-10",
-      "publicationStatus": "candidate"
+      "publicationStatus": "candidate",
+      "openingHours": {
+        "Lunes": "11:00–00:00",
+        "Martes": "11:00–00:00",
+        "Miércoles": "11:00–00:00",
+        "Jueves": "11:00–00:00",
+        "Viernes": "11:00–03:00",
+        "Sábado": "11:00–03:00",
+        "Domingo": "11:00–00:00"
+      },
+      "hoursSource": "Public business listings, consulted 2026-11-10; subject to change"
     },
     {
       "id": "maps-seed-5",
@@ -80,7 +126,17 @@
       "logoUrl": null,
       "menuStatus": "pending-verification",
       "source": "business-search-2026-11-10",
-      "publicationStatus": "candidate"
+      "publicationStatus": "candidate",
+      "openingHours": {
+        "Lunes": "17:00–02:00",
+        "Martes": "Cerrado",
+        "Miércoles": "17:00–02:00",
+        "Jueves": "17:00–02:00",
+        "Viernes": "17:00–03:00",
+        "Sábado": "17:00–03:00",
+        "Domingo": "17:00–02:00"
+      },
+      "hoursSource": "Public business listings, consulted 2026-11-10; subject to change"
     },
     {
       "id": "maps-seed-6",
@@ -112,7 +168,9 @@
       "logoUrl": null,
       "menuStatus": "pending-verification",
       "source": "business-search-2026-11-10",
-      "publicationStatus": "candidate"
+      "publicationStatus": "candidate",
+      "menuUrl": "https://www.ubereats.com/do/store/rotana-restaurant-santo-domingo/sM5iDV-jQLSG9ElLGGgsBg",
+      "menuLabel": "Consultar menú de Rotana Restaurant (vinculación con Rotana Kids sin confirmar)"
     },
     {
       "id": "maps-seed-8",
