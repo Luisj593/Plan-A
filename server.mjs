@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import http from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 import { discoverEstablishmentMedia, integrationStatus, resolvePlacesPhoto } from './integrations/establishment-media.mjs';
@@ -21,7 +22,7 @@ const server=http.createServer(async(req,res)=>{
   for(const [k,v] of Object.entries(security))res.setHeader(k,v);
   const url=new URL(req.url,'http://localhost');
   if(req.method==='GET'&&url.pathname==='/health')return send(res,200,{ok:true,service:'sd-social'});
-  if(req.method==='GET'&&url.pathname==='/'){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(html);}
+  if(req.method==='GET'&&(url.pathname==='/'||url.pathname==='/investigador')){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(url.pathname==='/' ? await readFile(new URL('./index.html',import.meta.url)) : html);}
   if(!rateLimit(req.socket.remoteAddress||'unknown'))return send(res,429,{error:'Too many requests'});
   if(url.pathname.startsWith('/api/admin/')){
     if(!token)return send(res,503,{error:'Admin not configured: set ADMIN_TOKEN in Railway'});
