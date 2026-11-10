@@ -77,7 +77,7 @@ export async function discoverEstablishmentMedia(name, city) {
 
 export async function resolvePlacesPhoto(photoName) {
   if (!env.GOOGLE_PLACES_API_KEY) throw new Error('Google Places not configured');
-  if (!/^places\\/[A-Za-z0-9_-]+\\/photos\\/[A-Za-z0-9_-]+$/.test(photoName))
+  if (!(photoName.startsWith('places/') && photoName.includes('/photos/') && !photoName.includes('..') && !photoName.includes('?')))
     throw new Error('Invalid Google Places photo name');
   const url = `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=1000&skipHttpRedirect=true`;
   const data = await json(url, { headers: { 'X-Goog-Api-Key': env.GOOGLE_PLACES_API_KEY } });
