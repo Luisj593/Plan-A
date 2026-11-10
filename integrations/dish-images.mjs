@@ -15,14 +15,56 @@ const queries={
  'Dame Deo':'strawberry cocktail',
  'De Color de Rosa':'strawberry martini'
 };
+Object.assign(queries,{
+ "Yaniqueque": "yaniqueque dominican",
+ "Croquetas de yuca": "cassava croquettes",
+ "Pastelitos de la casa": "dominican empanadas",
+ "Croquetas de chivo": "meat croquettes",
+ "Quesadilla de chivo": "quesadilla",
+ "Chicharrón de cerdo": "chicharron pork",
+ "Tabla JALAO": "dominican appetizer platter",
+ "Cazuela de mariscos": "seafood stew",
+ "Camarones criollos": "shrimp creole",
+ "Salmón a la parrilla": "grilled salmon",
+ "Ceviche con morir soñando": "shrimp ceviche",
+ "Majarete": "majarete",
+ "Flan de coco": "coconut flan",
+ "Cinco leches": "tres leches cake",
+ "Coco horneado": "coconut dessert",
+ "Pudín de pan y ciruela": "bread pudding",
+ "El Arretao": "old fashioned cocktail",
+ "El Abimbao": "long island iced tea cocktail",
+ "Mamajuana JALAO": "mamajuana dominican drink",
+ "Daiquirí": "daiquiri cocktail",
+ "Gin tonic": "gin tonic cocktail",
+ "Margarita": "margarita cocktail",
+ "Mojito fresa": "strawberry mojito",
+ "Mojito tradicional": "mojito cocktail",
+ "Sangría": "sangria wine",
+ "Santo libre": "rum sprite cocktail",
+ "Vodka tonic": "vodka tonic",
+ "White Russian": "white russian cocktail",
+ "Presidente": "Presidente Dominican beer bottle",
+ "Presidente Black": "Presidente Black beer bottle",
+ "Corona": "Corona beer bottle",
+ "Heineken": "Heineken beer bottle",
+ "Modelo": "Modelo beer bottle",
+ "Chicharrones Hasta La Tambora": "fried pork chicharron",
+ "Chimi de pierna Hasta La Tambora": "dominican chimi sandwich",
+ "Quipes de res": "kibbeh fried",
+ "Bollitos de yuca": "cassava cheese balls",
+ "Pickles Hasta La Tambora": "pickled cucumbers",
+ "Aceitunas Hasta La Tambora": "green olives",
+ "Casabe gratinado": "cassava flatbread cheese"
+});
 const cache=new Map();
 const normalized=s=>String(s).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\\s+/).filter(w=>w.length>2&&!['food','drink','cocktail','plato','bebida','artesanales'].includes(w));
 export async function getDishImages(dish){
  const query=queries[dish] || (String(dish||'').trim().slice(0,80)+' food drink');if(!query.trim())return [];
  const previous=cache.get(dish);if(previous&&previous.until>Date.now())return previous.items;
  const url=new URL('https://commons.wikimedia.org/w/api.php');
- url.search=new URLSearchParams({action:'query',generator:'search',gsrsearch:query,gsrnamespace:'6',gsrlimit:'15',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'640',format:'json'}).toString();
- const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),6500);
+ url.search=new URLSearchParams({action:'query',generator:'search',gsrsearch:query,gsrnamespace:'6',gsrlimit:'30',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'640',format:'json'}).toString();
+ const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),10000);
  try{
   const res=await fetch(url,{signal:ctrl.signal,headers:{'user-agent':'PlanA/1.0 (dish reference image search)'}});
   if(!res.ok)throw Error('image service unavailable');
