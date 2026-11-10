@@ -305,7 +305,8 @@
         "description": "Martini con vodka macerado en fresas, puré de fresas, sirope de albahaca y zumo de limón.",
         "price": "RD$525",
         "source": "https://www.hastalatamboralounge.com/menuhastalatambora",
-        "category": "Cócteles"
+        "category": "Cócteles",
+        "officialImage": "https://static.wixstatic.com/media/09ecca_bd1b7c416af64a3d9f9bf3fcb4d8f03d~mv2.jpg"
       },
       {
         "name": "Chicharrones Hasta La Tambora",
@@ -355,6 +356,22 @@
         "price": "RD$180",
         "category": "Tapas",
         "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      },
+      {
+        "name": "Bachata Rosa",
+        "description": "Cóctel de vodka, coco, lychee y té de hibisco.",
+        "price": "RD$650",
+        "category": "Cócteles",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora",
+        "officialImage": "https://static.wixstatic.com/media/09ecca_bff2a9d0a70f44d8b13703399b5003b6~mv2.jpg"
+      },
+      {
+        "name": "El Negrito del Batey",
+        "description": "Espresso martini tropical con Kahlúa, vodka, licor de banana y café.",
+        "price": "RD$500",
+        "category": "Cócteles",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora",
+        "officialImage": "https://static.wixstatic.com/media/09ecca_e883e8c114e04b14941e8b53358839e8~mv2.png"
       }
     ]
   },
