@@ -25,6 +25,7 @@ const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   if(req.method==='GET'&&url.pathname==='/api/dish-images'){const dish=(url.searchParams.get('dish')||'').slice(0,80);try{return send(res,200,{dish,images:await getDishImages(dish),note:'Reference images from Wikimedia Commons; not venue product photos'})}catch{return send(res,200,{dish,images:[],note:'No licensed reference image available'})}}
   if(req.method==='GET'&&url.pathname==='/api/venues/research'){try{return send(res,200,{venues:await researchRegisteredVenues(),mediaPolicy:'Candidates only. No automatic publication without rights verification.'})}catch(e){return send(res,502,{error:'Research unavailable'})}}
+  if(req.method==='GET'&&url.pathname==='/api/venues/drinks'){try{const data=JSON.parse(await readFile(new URL('./data/verified-drinks.json',import.meta.url),'utf8'));return send(res,200,data)}catch{return send(res,503,{error:'Drink catalog unavailable'})}}
   if(req.method==='GET'&&url.pathname==='/health')return send(res,200,{ok:true,service:'sd-social'});
   if(req.method==='GET'&&(url.pathname==='/'||url.pathname==='/investigador')){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(url.pathname==='/' ? await readFile(new URL('./index.html',import.meta.url)) : html);}
   if(!rateLimit(req.socket.remoteAddress||'unknown'))return send(res,429,{error:'Too many requests'});
