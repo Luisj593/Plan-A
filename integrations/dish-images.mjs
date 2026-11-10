@@ -58,7 +58,7 @@ Object.assign(queries,{
  "Casabe gratinado": "cassava flatbread cheese"
 });
 const cache=new Map();
-const normalized=s=>String(s).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\\s+/).filter(w=>w.length>2&&!['food','drink','cocktail','plato','bebida','artesanales'].includes(w));
+const normalized=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>2&&!['food','drink','cocktail','plato','bebida','artesanales'].includes(w));
 export async function getDishImages(dish){
  const query=queries[dish] || (String(dish||'').trim().slice(0,80)+' food drink');if(!query.trim())return [];
  const previous=cache.get(dish);if(previous&&previous.until>Date.now())return previous.items;
