@@ -16,11 +16,12 @@ const queries={
  'De Color de Rosa':'strawberry martini'
 };
 const cache=new Map();
+const normalized=s=>String(s).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\\s+/).filter(w=>w.length>2&&!['food','drink','cocktail','plato','bebida','artesanales'].includes(w));
 export async function getDishImages(dish){
- const query=queries[dish];if(!query)return [];
+ const query=queries[dish] || (String(dish||'').trim().slice(0,80)+' food drink');if(!query.trim())return [];
  const previous=cache.get(dish);if(previous&&previous.until>Date.now())return previous.items;
  const url=new URL('https://commons.wikimedia.org/w/api.php');
- url.search=new URLSearchParams({action:'query',generator:'search',gsrsearch:'filetype:bitmap '+query,gsrnamespace:'6',gsrlimit:'15',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'640',format:'json'}).toString();
+ url.search=new URLSearchParams({action:'query',generator:'search',gsrsearch:'intitle:'+query,gsrnamespace:'6',gsrlimit:'15',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'640',format:'json'}).toString();
  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),6500);
  try{
   const res=await fetch(url,{signal:ctrl.signal,headers:{'user-agent':'PlanA/1.0 (dish reference image search)'}});
@@ -28,8 +29,8 @@ export async function getDishImages(dish){
   const data=await res.json();
   const items=Object.values(data.query?.pages||{}).filter(p=>/\.(jpe?g|png|webp)$/i.test(p.title)).map(p=>{
    const info=p.imageinfo?.[0],meta=info?.extmetadata||{};
-   return {url:info?.thumburl,source:info?.descriptionurl,title:p.title.replace(/^File:/,''),author:meta.Artist?.value?.replace(/<[^>]*>/g,'').slice(0,180)||'',license:meta.LicenseShortName?.value||'',attributionRequired:meta.AttributionRequired?.value==='true'};
-  }).filter(x=>x.url?.startsWith('https://')&&x.source?.startsWith('https://')&&x.license&&!/non-free|fair use/i.test(x.license));
+   return {url:info?.thumburl,source:info?.descriptionurl,title:p.title.replace(/^File:/,''),author:meta.Artist?.value?.replace(/<[^>]*>/g,'').slice(0,180)||'',license:meta.LicenseShortName?.value||'',licenseUrl:meta.LicenseUrl?.value||'',attributionRequired:meta.AttributionRequired?.value==='true'};
+  }).filter(x=>x.url?.startsWith('https://')&&x.source?.startsWith('https://')&&/^(CC0|CC BY|Public domain)/i.test(x.license)).map(x=>({...x,score:normalized(query).filter(w=>normalized(x.title).includes(w)).length})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
   cache.set(dish,{items,until:Date.now()+6*3600000});return items;
  }finally{clearTimeout(timer)}
 }
