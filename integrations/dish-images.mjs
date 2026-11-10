@@ -21,7 +21,7 @@ export async function getDishImages(dish){
  const query=queries[dish] || (String(dish||'').trim().slice(0,80)+' food drink');if(!query.trim())return [];
  const previous=cache.get(dish);if(previous&&previous.until>Date.now())return previous.items;
  const url=new URL('https://commons.wikimedia.org/w/api.php');
- url.search=new URLSearchParams({action:'query',generator:'search',gsrsearch:'intitle:'+query,gsrnamespace:'6',gsrlimit:'15',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'640',format:'json'}).toString();
+ url.search=new URLSearchParams({action:'query',generator:'search',gsrsearch:query,gsrnamespace:'6',gsrlimit:'15',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'640',format:'json'}).toString();
  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),6500);
  try{
   const res=await fetch(url,{signal:ctrl.signal,headers:{'user-agent':'PlanA/1.0 (dish reference image search)'}});
