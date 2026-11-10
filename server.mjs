@@ -37,7 +37,8 @@ const server=http.createServer(async(req,res)=>{
       const catalog=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));
       const v=(catalog.venues||[]).find(item=>item.id===profileId);
       if(!v)return send(res,404,{error:'Comercio no encontrado'});
-      const hours=Object.entries(v.openingHours||{}).map(([day,time])=>'<div class="line"><b>'+esc(day)+'</b><span>'+esc(time)+'</span></div>').join('')||'<p>Pendiente de confirmación</p>';
+      const formatHours=(value)=>String(value??'').replace(/\b([01]?\d|2[0-3]):([0-5]\d)\b/g,(_,h,m)=>{const hour=Number(h);return (hour%12||12)+':'+m+' '+(hour<12?'AM':'PM')});
+      const hours=Object.entries(v.openingHours||{}).map(([day,time])=>'<div class="line"><b>'+esc(day)+'</b><span>'+esc(formatHours(time))+'</span></div>').join('')||'<p>Pendiente de confirmación</p>';
       const action=(label,href,style='')=>href?'<a class="action '+style+'" href="'+href+'" target="_blank" rel="noopener noreferrer">'+label+'</a>':'';
       const cover=v.photoUrl&&v.photoVerified?'<img class="cover-image" src="'+safeUrl(v.photoUrl)+'" alt="Portada de '+esc(v.name)+'">':'';
       const logo=v.logoUrl&&v.logoVerified?'<img src="'+safeUrl(v.logoUrl)+'" alt="Logo de '+esc(v.name)+'">':'🏪';
