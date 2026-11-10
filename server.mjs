@@ -29,7 +29,7 @@ const server=http.createServer(async(req,res)=>{
   if(req.method==='GET'&&url.pathname==='/data/venue-directory-seed.json'){try{const data=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));return send(res,200,data)}catch{return send(res,503,{error:'Directory unavailable'})}}
   if(req.method==='GET'&&url.pathname==='/comercio.html'){try{const page=await readFile(new URL('./comercio.html',import.meta.url));res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(page)}catch{return send(res,503,{error:'Storefront unavailable'})}}
   // Server-rendered business profiles: deep links work without client-side routing.
-  const profileId=url.pathname.match(/^\\/comercio\\/([a-zA-Z0-9_-]+)\\/?$/)?.[1] || (url.pathname==='/'?url.searchParams.get('comercio'):null);
+  const profileId=url.pathname.startsWith('/comercio/') ? url.pathname.slice('/comercio/'.length).replace(/\/$/,'') : (url.pathname==='/' ? url.searchParams.get('comercio') : null);
   if(req.method==='GET'&&profileId){
     const esc=(value)=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const safeUrl=(value)=>{try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?esc(u.href):''}catch{return ''}};
