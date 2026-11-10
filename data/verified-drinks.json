@@ -1,0 +1,60 @@
+{
+  "updatedAt": "2026-11-10",
+  "venues": {
+    "Jalao": [
+      {
+        "name": "Cóctel JALAO",
+        "description": "Ron blanco, ron de coco, licor de banana, jugo de piña y granadina.",
+        "price": "RD$350",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "El Mayimbe",
+        "description": "Mojito de coco con menta, zumo de limón, ron blanco y soda.",
+        "price": "RD$350",
+        "source": "https://jalao.do/"
+      },
+      {
+        "name": "Sangría JALAO",
+        "description": "Sangría tinta, blanca o rosada.",
+        "price": "RD$420",
+        "source": "https://jalao.do/"
+      }
+    ],
+    "Safe Zone Bar & Lounge": [
+      {
+        "name": "Blue Hawaiian",
+        "description": "Ron blanco, curaçao azul, piña, limón y crema de coco.",
+        "price": "RD$600",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Mojito de chinola",
+        "description": "Ron, limón, azúcar, chinola, menta y agua mineral con gas.",
+        "price": "RD$300",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Piña colada",
+        "description": "Ron blanco, crema de coco, zumo de piña y piña.",
+        "price": "RD$400",
+        "source": "https://safezonerd.com/menu"
+      },
+      {
+        "name": "Dame Deo",
+        "description": "Fireball, jugo de fresa y zumo de limón.",
+        "price": "RD$500",
+        "source": "https://safezonerd.com/menu"
+      }
+    ],
+    "Hasta La Tambora Café Lounge": [
+      {
+        "name": "De Color de Rosa",
+        "description": "Martini con vodka macerado en fresas, puré de fresas, sirope de albahaca y zumo de limón.",
+        "price": "RD$525",
+        "source": "https://www.hastalatamboralounge.com/menuhastalatambora"
+      }
+    ]
+  },
+  "disclaimer": "Descriptions and prices transcribed from official websites; prices may change. Image references are illustrative unless explicitly sourced from the venue."
+}
