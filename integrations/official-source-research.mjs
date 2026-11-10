@@ -20,7 +20,10 @@ async function getMetadata(source){
   const logo=tag(html,/<link[^>]*rel=["'][^"']*icon[^"']*["'][^>]*href=["']([^"']+)["']/i);
   const desc=tag(html,/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
   const imageUrl=absolute(image,source.url),logoUrl=absolute(logo,source.url);
-  return {...source,description:desc,mediaCandidates:[...(imageUrl?[{type:'photo',url:imageUrl}]:[]),...(logoUrl?[{type:'site-icon',url:logoUrl}]:[])].map(m=>({...m,source:source.url,rights:'unverified',approved:false})),status:'found'};
+  const firstParty=!source.url.includes('zonacolonial.do/directorio');
+  const photo=firstParty?imageUrl:null;
+  const icon=firstParty?logoUrl:null;
+  return {...source,description:desc,mediaCandidates:[...(photo?[{type:'photo',url:photo}]:[]),...(icon?[{type:'site-icon',url:icon}]:[])].map(m=>({...m,source:source.url,rights:'unverified',approved:false})),status:'found'};
  }catch(e){return {...source,mediaCandidates:[],status:'unavailable',note:e.message}}finally{clearTimeout(timeout)}
 }
 let cache={expires:0,data:[]};
