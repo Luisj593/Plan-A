@@ -22,7 +22,7 @@ async function getMetadata(source){
   const image=tag(html,/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)||tag(html,/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
   const logo=tag(html,/<link[^>]*rel=["'][^"']*icon[^"']*["'][^>]*href=["']([^"']+)["']/i);
   const desc=tag(html,/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
-  const socialLinks=[...html.matchAll(/href=["'](https?:\\/\\/(?:www\\.)?(?:instagram\\.com|facebook\\.com|tiktok\\.com|youtube\\.com)\\/[^"'<>\\s]+)["']/gi)].map(m=>m[1].replace(/&amp;/g,'&')).filter((v,i,a)=>a.indexOf(v)===i).slice(0,12);
+  const socialLinks=[...html.matchAll(/href=["']([^"']+)["']/gi)].map(m=>absolute(m[1],source.url)).filter(Boolean).filter(u=>{try{return ['instagram.com','www.instagram.com','facebook.com','www.facebook.com','tiktok.com','www.tiktok.com','youtube.com','www.youtube.com'].includes(new URL(u).hostname)}catch{return false}}).filter((v,i,a)=>a.indexOf(v)===i).slice(0,12);
   const imageUrl=absolute(image,source.url),logoUrl=absolute(logo,source.url);
   const firstParty=!source.url.includes('zonacolonial.do/directorio')&&!source.url.includes('thebestofdr.do');
   const photo=firstParty?imageUrl:null;
