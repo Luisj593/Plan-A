@@ -1,4 +1,4 @@
-import {register,login,current,logout,assignMerchant,bootstrapSuperAdmin,allMerchants,activateSuperAdminForSession} from './integrations/auth.mjs';
+import {register,login,current,logout,assignMerchant,bootstrapSuperAdmin,allMerchants,activateSuperAdminForSession,provisionInitialSuperAdmin} from './integrations/auth.mjs';
 import {findOfficialVenueImages} from './integrations/official-venue-image-finder.mjs';
 import { readFile } from 'node:fs/promises';
 import {listVenueMedia,readVenueMedia,saveVenueMedia} from './integrations/venue-media-store.mjs';
@@ -116,3 +116,5 @@ const server=http.createServer(async(req,res)=>{
 });
 if(process.env.NODE_ENV!=='test')server.listen(port,'0.0.0.0',()=>console.log('SD Social listening on '+port));
 export {server};
+
+provisionInitialSuperAdmin().catch(e=>console.error('Initial admin provisioning failed:',e.message));
