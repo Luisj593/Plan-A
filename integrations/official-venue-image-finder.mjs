@@ -24,7 +24,7 @@ export async function findOfficialVenueImages(id,sourceUrl){
   const location=response.headers.get('location');
   if(!location)throw Error('La fuente redirige sin destino');
   const next=new URL(location,page);
-  if(/(^|\\.)instagram\\.com$/i.test(target.hostname)&&/\\/(accounts\\/login|challenge|auth|login)/i.test(next.pathname))throw Error('Instagram solicita iniciar sesión y no permite extraer las imágenes desde esta URL. Usa una galería web pública o enlaces directos autorizados.');
+  if(next.hostname.endsWith('instagram.com')&&['/accounts/login','/challenge','/auth','/login'].some(path=>next.pathname.startsWith(path)))throw Error('Instagram solicita iniciar sesión. Usa una galería pública o enlaces directos autorizados.');
   page=next;
  }
  if([301,302,303,307,308].includes(response.status))throw Error('La página tiene demasiadas redirecciones');
