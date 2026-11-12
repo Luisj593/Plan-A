@@ -24,7 +24,7 @@ const security={"content-security-policy":"default-src 'none'; script-src 'unsaf
 const server=http.createServer(async(req,res)=>{
   for(const [k,v] of Object.entries(security))res.setHeader(k,v);
   const url=new URL(req.url,'http://localhost');
-  if(req.method==='GET'&&/^\\/api\\/venue-media\\/[0-9a-f-]{36}$/.test(url.pathname)){
+  if(req.method==='GET'&&url.pathname.startsWith('/api/venue-media/')&&/^[0-9a-f-]{36}$/.test(url.pathname.split('/').pop())){36}$/.test(url.pathname)){
     try{const item=await readVenueMedia(url.pathname.split('/').pop());if(!item)return send(res,404,{error:'Image not found'});res.writeHead(200,{'content-type':item.content_type,'cache-control':'public, max-age=86400','x-content-type-options':'nosniff'});return res.end(item.bytes)}catch(e){console.error('Venue media read',e.message);return send(res,503,{error:'Media storage unavailable'})}
   }
   if(req.method==='GET'&&url.pathname==='/api/venue-media'){
