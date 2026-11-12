@@ -33,10 +33,15 @@ export async function findOfficialVenueImages(id,sourceUrl){
  if(!(response.headers.get('content-type')||'').includes('text/html'))throw Error('La URL no devuelve una página HTML');
  if(Number(response.headers.get('content-length')||0)>1500000)throw Error('Página demasiado grande');
  const html=(await response.text()).slice(0,1500000);const images=[];const seen=new Set();
- function add(raw,kind){try{const u=new URL(decode(raw),page);if(u.protocol!=='https:'||seen.has(u.href))return;seen.add(u.href);images.push({url:u.href,kind,sourcePage:page.href,rights:'pending_review'})}catch{}}
+ function add(raw,kind){try{if(!raw||/^(data:|blob:|javascript:)/i.test(raw))return;const u=new URL(decode(raw.trim()),page);if(u.protocol!=='https:'||seen.has(u.href)||/\.svg(?:[?#]|$)/i.test(u.pathname))return;seen.add(u.href);images.push({url:u.href,kind,sourcePage:page.href,rights:'pending_review'})}catch{}}
+ function srcset(value,kind){for(const part of String(value||'').split(',')){const url=part.trim().split(/\s+/)[0];if(url)add(url,kind)}}
  for(const match of html.matchAll(/<meta\b[^>]*>/gi)){const a=attrs(match[0]);const key=(a.property||a.name||'').toLowerCase();if(['og:image','og:image:url','twitter:image','twitter:image:src'].includes(key)&&a.content)add(a.content,'cover')}
- for(const match of html.matchAll(/<img\b[^>]*>/gi)){const a=attrs(match[0]);const candidate=a['data-src']||a['data-original']||a['data-lazy-src']||a.src;if(candidate&&!/\.svg(?:\?|$)/i.test(candidate))add(candidate,'gallery')}
- // Some public social pages expose preview images through JSON-LD or srcset.
+ for(const match of html.matchAll(/<(?:img|source)\b[^>]*>/gi)){const a=attrs(match[0]);for(const key of ['data-src','data-original','data-lazy-src','data-image','data-image-src','data-flickity-lazyload','src'])if(a[key])add(a[key],'gallery');for(const key of ['srcset','data-srcset','data-lazy-srcset'])if(a[key])srcset(a[key],'gallery')}
+ // Site builders frequently use CSS background images and JSON image metadata.
+ for(const match of html.matchAll(/(?:background-image\s*:\s*|background\s*:\s*)url\(\s*['"]?([^)'"]+)/gi))add(match[1],'gallery');
+ for(const match of html.matchAll(/\b(?:data-bg|data-background|data-background-image|data-image-url)\s*=\s*["']([^"']+)["']/gi))add(match[1],'gallery');
+ for(const match of html.matchAll(/"(?:(?:image|imageUrl|thumbnailUrl|contentUrl|originalUrl))"\s*:\s*"((?:https?:)?\\?\/[^"]+)"/gi)){const raw=match[1].replace(/\\\//g,'/');add(raw,'gallery')}
+ // Preserve all distinct candidates rather than truncating galleries at 24.
  const social=/(^|\.)(instagram\.com|facebook\.com|fb\.com|fb\.watch)$/i.test(target.hostname);
- return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,24),status:images.length?'candidates_found':'no_images_found',notice:images.length?'Imágenes públicas candidatas: revisa los derechos antes de agregar.':social?'La red social no expone fotografías públicas en esta página. Para galerías completas se requiere conexión autorizada con Meta.':'No se encontraron imágenes públicas en la página.'};
+ return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,120),status:images.length?'candidates_found':'no_images_found',notice:images.length?'Imágenes públicas candidatas: revisa los derechos antes de agregar.':social?'La red social no expone fotografías públicas en esta página. Para galerías completas se requiere conexión autorizada con Meta.':'No se encontraron imágenes públicas en la página.'};
 }
