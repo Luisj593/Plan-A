@@ -1,3 +1,4 @@
+import {findOfficialVenueImages} from './integrations/official-venue-image-finder.mjs';
 import { readFile } from 'node:fs/promises';
 import {listVenueMedia,readVenueMedia,saveVenueMedia} from './integrations/venue-media-store.mjs';
 import http from 'node:http';
@@ -26,6 +27,14 @@ const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   if(req.method==='GET'&&url.pathname.startsWith('/api/venue-media/')&&/^[0-9a-f-]{36}$/.test(url.pathname.split('/').pop())){
     try{const item=await readVenueMedia(url.pathname.split('/').pop());if(!item)return send(res,404,{error:'Image not found'});res.writeHead(200,{'content-type':item.content_type,'cache-control':'public, max-age=86400','x-content-type-options':'nosniff'});return res.end(item.bytes)}catch(e){console.error('Venue media read',e.message);return send(res,503,{error:'Media storage unavailable'})}
+  }
+  if(req.method==='GET'&&url.pathname==='/api/admin/venue-image-search'){
+    if(!token||!safeEq(req.headers.authorization||'','Bearer '+token))return send(res,401,{error:'Unauthorized'});
+    try{return send(res,200,await findOfficialVenueImages((url.searchParams.get('venueId')||'').slice(0,90)))}catch(e){return send(res,502,{error:String(e.message).slice(0,180)})}
+  }
+  if(req.method==='GET'&&url.pathname==='/admin/imagenes'){
+    res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});
+    return res.end(await readFile(new URL('./admin-images.html',import.meta.url)));
   }
   if(req.method==='GET'&&url.pathname==='/api/venue-media'){
     try{return send(res,200,{photos:await listVenueMedia((url.searchParams.get('venueId')||'').slice(0,90))})}catch(e){console.error('Venue media list',e.message);return send(res,503,{error:'Media storage unavailable'})}
