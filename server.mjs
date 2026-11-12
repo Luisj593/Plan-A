@@ -82,15 +82,29 @@ const server=http.createServer(async(req,res)=>{
       if(!addresses.length||addresses.some(x=>x.family===4&&(/^(0|10|127|169\\.254|192\\.168)\\./.test(x.address)||/^172\\.(1[6-9]|2[0-9]|3[01])\\./.test(x.address))||x.family===6&&(/^(::1|fc|fd|fe80|::ffff:)/i.test(x.address))))return send(res,400,{error:'Origen no permitido'});
       const catalog=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));
       if(!catalog.venues.some(v=>v.id===input.venueId))return send(res,404,{error:'Comercio no encontrado'});
-      const response=await fetch(source,{redirect:'error',signal:AbortSignal.timeout(10000),headers:{accept:'image/jpeg,image/png,image/webp,image/avif'}});
-      if(!response.ok)throw Error('No se pudo obtener imagen ('+response.status+')');
+      // Image CDNs commonly redirect to a separate public image host.
+      // Validate every redirect destination before making the next request.
+      let target=source,response;
+      for(let hop=0;hop<4;hop++){
+        const addresses=await lookup(target.hostname,{all:true});
+        const blocked=addresses.some(x=>x.family===4&&(/^(0|10|127|169\\.254|192\\.168)\\./.test(x.address)||/^172\\.(1[6-9]|2[0-9]|3[01])\\./.test(x.address))||x.family===6&&(/^(::1|fc|fd|fe80|::ffff:)/i.test(x.address)));
+        if(target.protocol!=='https:'||target.port||target.username||target.password||isIP(target.hostname)||!addresses.length||blocked)throw Error('Redirección a origen no permitido');
+        response=await fetch(target,{redirect:'manual',signal:AbortSignal.timeout(15000),headers:{accept:'image/avif,image/webp,image/png,image/jpeg,image/*;q=0.8','user-agent':'Mozilla/5.0 (compatible; PlanAImageImporter/1.0)'}});
+        if([301,302,303,307,308].includes(response.status)){
+          const location=response.headers.get('location');if(!location)throw Error('Redirección sin destino');
+          target=new URL(location,target);continue;
+        }
+        break;
+      }
+      if([301,302,303,307,308].includes(response.status))throw Error('Demasiadas redirecciones');
+      if(!response.ok)throw Error('La fuente rechazó la descarga de la imagen (HTTP '+response.status+'). Usa un enlace directo y público.');
       const contentType=(response.headers.get('content-type')||'').split(';')[0].trim().toLowerCase();
-      if(!['image/jpeg','image/png','image/webp','image/avif'].includes(contentType))throw Error('El enlace no devuelve una imagen compatible');
+      if(!['image/jpeg','image/png','image/webp','image/avif'].includes(contentType))throw Error('La URL no devuelve una imagen JPEG, PNG, WebP o AVIF (tipo: '+(contentType||'desconocido')+').');
       if(Number(response.headers.get('content-length')||0)>5000000)throw Error('Imagen supera 5 MB');
       const bytes=Buffer.from(await response.arrayBuffer());if(bytes.length>5000000)throw Error('Imagen supera 5 MB');
       const saved=await saveVenueMedia({venueId:input.venueId,kind:input.kind,title:input.title||'Imagen de establecimiento',contentType,base64:bytes.toString('base64'),sourceUrl:source.href,licenseNote:input.licenseNote});
       return send(res,201,saved);
-    }catch(e){return send(res,400,{error:String(e.message).slice(0,180)})}
+    }catch(e){console.error('Venue image import failed:',String(e.message).slice(0,250));return send(res,400,{error:String(e.message).slice(0,180)})}
   }
   if(req.method==='GET'&&url.pathname==='/api/venues/google-photos'){const id=(url.searchParams.get('id')||'').slice(0,90);try{const data=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));const venue=data.venues.find(v=>v.id===id);if(!venue)return send(res,404,{error:'Comercio no encontrado'});if(!process.env.GOOGLE_PLACES_API_KEY)return send(res,200,{photos:[],configured:false});const {findPlace}=await import('./integrations/establishment-media.mjs');const matches=await findPlace(venue.name,'Santo Domingo, República Dominicana');const normalize=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');const target=normalize(venue.name);const match=matches.find(p=>normalize(p.name)===target)||matches.find(p=>normalize(p.name).includes(target)&&target.length>7);if(!match)return send(res,200,{photos:[],configured:true,match:false});return send(res,200,{photos:match.photos.slice(0,6).map(p=>({url:p.displayEndpoint,attribution:p.attribution,source:venue.mapsUrl})),configured:true,match:true})}catch(e){const message=String(e?.message||'');const code=/403|PERMISSION_DENIED|API_KEY|not enabled|billing/i.test(message)?'GOOGLE_ACCESS_DENIED':/429|RESOURCE_EXHAUSTED|quota/i.test(message)?'GOOGLE_QUOTA':/400|INVALID_ARGUMENT/i.test(message)?'GOOGLE_BAD_REQUEST':'GOOGLE_UNAVAILABLE';console.error('Google Places venue photos',id,code,message.replace(/AIza[0-9A-Za-z_-]+/g,'[REDACTED]').slice(0,400));if(code==='GOOGLE_ACCESS_DENIED')return send(res,200,{photos:[],configured:false,available:false,code,message:'Fotos externas temporalmente no disponibles; se mantienen las imágenes verificadas del establecimiento.'});return send(res,502,{error:'No fue posible consultar las fotos del establecimiento',code})}}
   if(req.method==='GET'&&url.pathname==='/api/establishment-media/places-photo'){const name=url.searchParams.get('name')||'';try{const photo=await resolvePlacesPhoto(name);res.writeHead(302,{'location':photo.displayUrl,'cache-control':'no-store'});return res.end()}catch{return send(res,404,{error:'Foto no disponible'})}}
