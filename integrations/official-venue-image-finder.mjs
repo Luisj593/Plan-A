@@ -11,9 +11,9 @@ export async function findOfficialVenueImages(id,sourceUrl){
  const target=new URL(sourceUrl||venue.website);
  if(target.protocol!=='https:'||target.port||target.username||target.password||!/^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(target.hostname)||isIP(target.hostname))throw Error('URL HTTPS pública requerida');
  async function validatePublicUrl(u){
-  if(u.protocol!=='https:'||u.port||u.username||u.password||isIP(u.hostname)||!/^([a-z0-9-]+\\.)+[a-z]{2,}$/i.test(u.hostname))throw Error('La URL debe ser HTTPS pública');
+  if(u.protocol!=='https:'||u.port||u.username||u.password||isIP(u.hostname)||!/^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(u.hostname))throw Error('La URL debe ser HTTPS pública');
   const resolved=await lookup(u.hostname,{all:true});
-  if(!resolved.length||resolved.some(x=>x.family===4&&(/^(0|10|127|169\\.254|192\\.168)\\./.test(x.address)||/^172\\.(1[6-9]|2[0-9]|3[01])\\./.test(x.address)||/^22[4-9]\\./.test(x.address)||/^23\\d\\./.test(x.address))||x.family===6&&(/^(::1|fc|fd|fe80|::ffff:)/i.test(x.address))))throw Error('Origen de redirección no permitido');
+  if(!resolved.length||resolved.some(x=>x.family===4&&(/^(0|10|127|169\.254|192\.168)\./.test(x.address)||/^172\.(1[6-9]|2[0-9]|3[01])\./.test(x.address)||/^22[4-9]\./.test(x.address)||/^23\d\./.test(x.address))||x.family===6&&(/^(::1|fc|fd|fe80|::ffff:)/i.test(x.address))))throw Error('Origen de redirección no permitido');
  }
  let page=target,response;
  for(let hop=0;hop<5;hop++){
@@ -37,6 +37,6 @@ export async function findOfficialVenueImages(id,sourceUrl){
  for(const match of html.matchAll(/<meta\b[^>]*>/gi)){const a=attrs(match[0]);const key=(a.property||a.name||'').toLowerCase();if(['og:image','og:image:url','twitter:image','twitter:image:src'].includes(key)&&a.content)add(a.content,'cover')}
  for(const match of html.matchAll(/<img\b[^>]*>/gi)){const a=attrs(match[0]);const candidate=a['data-src']||a['data-original']||a['data-lazy-src']||a.src;if(candidate&&!/\.svg(?:\?|$)/i.test(candidate))add(candidate,'gallery')}
  // Some public social pages expose preview images through JSON-LD or srcset.
- const social=/(^|\\.)(instagram\\.com|facebook\\.com|fb\\.com|fb\\.watch)$/i.test(target.hostname);
+ const social=/(^|\.)(instagram\.com|facebook\.com|fb\.com|fb\.watch)$/i.test(target.hostname);
  return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,24),status:images.length?'candidates_found':'no_images_found',notice:images.length?'Imágenes públicas candidatas: revisa los derechos antes de agregar.':social?'La red social no expone fotografías públicas en esta página. Para galerías completas se requiere conexión autorizada con Meta.':'No se encontraron imágenes públicas en la página.'};
 }
