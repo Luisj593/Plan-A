@@ -1,4 +1,4 @@
-import {register,login,current,logout,assignMerchant,bootstrapSuperAdmin,allMerchants} from './integrations/auth.mjs';
+import {register,login,current,logout,assignMerchant,bootstrapSuperAdmin,allMerchants,activateSuperAdminForSession} from './integrations/auth.mjs';
 import {findOfficialVenueImages} from './integrations/official-venue-image-finder.mjs';
 import { readFile } from 'node:fs/promises';
 import {listVenueMedia,readVenueMedia,saveVenueMedia} from './integrations/venue-media-store.mjs';
@@ -36,6 +36,7 @@ const server=http.createServer(async(req,res)=>{
       if(req.method==='POST'&&url.pathname==='/api/auth/login'){const result=await login(await json());res.setHeader('set-cookie','plana_session='+result.token+'; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800');return send(res,200,{user:result.user})}
       if(req.method==='POST'&&url.pathname==='/api/auth/logout'){await logout(req);res.setHeader('set-cookie','plana_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0');return send(res,200,{ok:true})}
       if(req.method==='POST'&&url.pathname==='/api/auth/assign-merchant'){const actor=await current(req);if(!actor||actor.role!=='super_admin')return send(res,403,{error:'Solo Super Admin'});const data=await json();const catalog=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));if(!catalog.venues.some(v=>v.id===data.venueId))return send(res,404,{error:'Comercio no registrado'});return send(res,200,{user:await assignMerchant(data.email,data.venueId)})}
+      if(req.method==='POST'&&url.pathname==='/api/auth/activate-admin-session'){return send(res,200,await activateSuperAdminForSession(req))}
       if(req.method==='POST'&&url.pathname==='/api/auth/bootstrap-admin'){return send(res,200,await bootstrapSuperAdmin(await json()))}
       if(req.method==='GET'&&url.pathname==='/api/auth/admin-dashboard'){const user=await current(req);if(!user||user.role!=='super_admin')return send(res,403,{error:'Solo Super Admin'});const catalog=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));return send(res,200,{user,venues:catalog.venues.map(v=>({id:v.id,name:v.name})),merchants:await allMerchants()})}
       if(req.method==='POST'&&url.pathname==='/api/auth/admin-assign'){const user=await current(req);if(!user||user.role!=='super_admin')return send(res,403,{error:'Solo Super Admin'});const data=await json();const catalog=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));if(!catalog.venues.some(v=>v.id===data.venueId))return send(res,404,{error:'Comercio no registrado'});return send(res,200,{user:await assignMerchant(data.email,data.venueId)})}
