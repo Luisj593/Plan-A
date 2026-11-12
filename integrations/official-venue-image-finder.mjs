@@ -41,7 +41,26 @@ export async function findOfficialVenueImages(id,sourceUrl){
  for(const match of html.matchAll(/(?:background-image\s*:\s*|background\s*:\s*)url\(\s*['"]?([^)'"]+)/gi))add(match[1],'gallery');
  for(const match of html.matchAll(/\b(?:data-bg|data-background|data-background-image|data-image-url)\s*=\s*["']([^"']+)["']/gi))add(match[1],'gallery');
  for(const match of html.matchAll(/"(?:(?:image|imageUrl|thumbnailUrl|contentUrl|originalUrl))"\s*:\s*"((?:https?:)?\\?\/[^"]+)"/gi)){const raw=match[1].replace(/\\\//g,'/');add(raw,'gallery')}
+
+ // Extract actual menu entries separately from image URLs. Many menu pages use
+ // h4 + price + description while photographs are loaded by client-side scripts.
+ const strip=fragment=>decode(String(fragment||'').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim());
+ const products=[];let section='Menú';
+ const headings=[...html.matchAll(/<h([234])\b[^>]*>([\s\S]*?)<\/h\1>/gi)];
+ for(let i=0;i<headings.length;i++){
+  const h=headings[i],level=Number(h[1]),name=strip(h[2]);
+  if(level===2||level===3){if(name)section=name.slice(0,120);continue}
+  if(!name||name.length>110)continue;
+  const segment=html.slice(h.index+h[0].length,headings[i+1]?.index??Math.min(html.length,h.index+2400)).slice(0,2200);
+  const plain=strip(segment);
+  const priceMatch=plain.match(/(?:RD\$\s*)?(\d{2,5})(?:\.00)?(?:\s|$)/);
+  if(!priceMatch)continue;
+  const price=Number(priceMatch[1]);
+  if(price<50||price>100000)continue;
+  const description=plain.slice((priceMatch.index||0)+priceMatch[0].length).trim().slice(0,500);
+  if(!products.some(p=>p.name.toLowerCase()===name.toLowerCase()))products.push({name,price,description,section,category:/cocktail|coctel|bebida|drink|mocktail|vino|cerveza/i.test(section)?'bebidas':'general',sourcePage:page.href});
+ }
  // Preserve all distinct candidates rather than truncating galleries at 24.
  const social=/(^|\.)(instagram\.com|facebook\.com|fb\.com|fb\.watch)$/i.test(target.hostname);
- return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,120),status:images.length?'candidates_found':'no_images_found',notice:images.length?'Imágenes públicas candidatas: revisa los derechos antes de agregar.':social?'La red social no expone fotografías públicas en esta página. Para galerías completas se requiere conexión autorizada con Meta.':'No se encontraron imágenes públicas en la página.'};
+ return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,120),products:products.slice(0,250),status:images.length?'candidates_found':'no_images_found',notice:images.length?'Imágenes públicas candidatas: revisa los derechos antes de agregar.':social?'La red social no expone fotografías públicas en esta página. Para galerías completas se requiere conexión autorizada con Meta.':'No se encontraron imágenes públicas en la página.'};
 }
