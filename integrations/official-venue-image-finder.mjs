@@ -24,7 +24,7 @@ export async function findOfficialVenueImages(id,sourceUrl){
   const location=response.headers.get('location');
   if(!location)throw Error('La fuente redirige sin destino');
   const next=new URL(location,page);
-  if(next.hostname.endsWith('instagram.com')&&['/accounts/login','/challenge','/auth','/login'].some(path=>next.pathname.startsWith(path)))throw Error('Instagram solicita iniciar sesión. Usa una galería pública o enlaces directos autorizados.');
+  if((next.hostname==='instagram.com'||next.hostname.endsWith('.instagram.com')||next.hostname==='facebook.com'||next.hostname.endsWith('.facebook.com'))&&['/accounts/login','/challenge','/auth','/login','/checkpoint'].some(path=>next.pathname.startsWith(path)))throw Error('Instagram o Facebook requiere iniciar sesión. Para extraer galerías completas conecta una cuenta autorizada de Meta.');
   page=next;
  }
  if([301,302,303,307,308].includes(response.status))throw Error('La página tiene demasiadas redirecciones');
@@ -35,6 +35,16 @@ export async function findOfficialVenueImages(id,sourceUrl){
  const html=(await response.text()).slice(0,1500000);const images=[];const seen=new Set();
  function add(raw,kind){try{const u=new URL(decode(raw),page);if(u.protocol!=='https:'||seen.has(u.href))return;seen.add(u.href);images.push({url:u.href,kind,sourcePage:page.href,rights:'pending_review'})}catch{}}
  for(const match of html.matchAll(/<meta\b[^>]*>/gi)){const a=attrs(match[0]);const key=(a.property||a.name||'').toLowerCase();if(['og:image','og:image:url','twitter:image','twitter:image:src'].includes(key)&&a.content)add(a.content,'cover')}
- for(const match of html.matchAll(/<img\b[^>]*>/gi)){const a=attrs(match[0]);const candidate=a['data-src']||a.src;if(candidate&&!/\.svg(?:\?|$)/i.test(candidate))add(candidate,'gallery')}
- return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,16),status:images.length?'candidates_found':'no_images_found',notice:'Candidatas para revisión. No descargar ni publicar sin confirmar derechos.'};
+ for(const match of html.matchAll(/<img\b[^>]*>/gi)){const a=attrs(match[0]);const candidate=a['data-src']||a['data-original']||a['data-lazy-src']||a.src;if(candidate&&!/\.svg(?:\?|$)/i.test(candidate))add(candidate,'gallery')}
+ // Some public social pages expose preview images through JSON-LD or srcset.
+ for(const match of html.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)){
+  try{
+   const json=JSON.parse(match[1]);const visit=(node,depth=0)=>{if(depth>8||!node)return;if(Array.isArray(node)){node.forEach(v=>visit(v,depth+1));return}if(typeof node==='object'){for(const [key,value] of Object.entries(node)){if(['image','thumbnailUrl','contentUrl'].includes(key)){if(typeof value==='string')add(value,'gallery');else visit(value,depth+1)}else if(typeof value==='object')visit(value,depth+1)}}};visit(json);
+  }catch{}
+ }
+ for(const match of html.matchAll(/<img\\b[^>]*>/gi)){
+  const a=attrs(match[0]);const srcset=a.srcset||a['data-srcset'];if(srcset){const first=srcset.split(',')[0]?.trim().split(/\\s+/)[0];if(first)add(first,'gallery')}
+ }
+ const social=/(^|\\.)(instagram\\.com|facebook\\.com|fb\\.com|fb\\.watch)$/i.test(target.hostname);
+ return {venueId:id,name:venue.name,website:page.href,images:images.slice(0,24),status:images.length?'candidates_found':'no_images_found',notice:images.length?'Imágenes públicas candidatas: revisa los derechos antes de agregar.':social?'La red social no expone fotografías públicas en esta página. Para galerías completas se requiere conexión autorizada con Meta.':'No se encontraron imágenes públicas en la página.'};
 }
