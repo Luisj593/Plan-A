@@ -1,3 +1,4 @@
+import {register,login,current,logout,assignMerchant} from './integrations/auth.mjs';
 import {findOfficialVenueImages} from './integrations/official-venue-image-finder.mjs';
 import { readFile } from 'node:fs/promises';
 import {listVenueMedia,readVenueMedia,saveVenueMedia} from './integrations/venue-media-store.mjs';
@@ -25,6 +26,20 @@ const security={"content-security-policy":"default-src 'none'; script-src 'unsaf
 const server=http.createServer(async(req,res)=>{
   for(const [k,v] of Object.entries(security))res.setHeader(k,v);
   const url=new URL(req.url,'http://localhost');
+  if(req.method==='GET'&&url.pathname==='/acceso'){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(await readFile(new URL('./login.html',import.meta.url)))}
+  if(url.pathname.startsWith('/api/auth/')){
+    const json=async()=>{let body='';for await(const chunk of req){body+=chunk;if(body.length>12000)throw Error('Solicitud demasiado grande')}return JSON.parse(body)};
+    try{
+      if(req.method==='GET'&&url.pathname==='/api/auth/me')return send(res,200,{user:await current(req)});
+      if(req.method==='POST'&&url.pathname==='/api/auth/register'){const user=await register(await json());return send(res,201,{user,message:user.role==='merchant'?'Cuenta creada. La asignación de un comercio requiere aprobación.':'Cuenta creada. Ya puedes iniciar sesión.'})}
+      if(req.method==='POST'&&url.pathname==='/api/auth/login'){const result=await login(await json());res.setHeader('set-cookie','plana_session='+result.token+'; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800');return send(res,200,{user:result.user})}
+      if(req.method==='POST'&&url.pathname==='/api/auth/logout'){await logout(req);res.setHeader('set-cookie','plana_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0');return send(res,200,{ok:true})}
+      if(req.method==='POST'&&url.pathname==='/api/auth/assign-merchant'){if(!token||!safeEq(req.headers.authorization||'','Bearer '+token))return send(res,403,{error:'Acceso administrativo requerido'});const data=await json();const catalog=JSON.parse(await readFile(new URL('./data/venue-directory-seed.json',import.meta.url),'utf8'));if(!catalog.venues.some(v=>v.id===data.venueId))return send(res,404,{error:'Comercio no registrado'});return send(res,200,{user:await assignMerchant(data.email,data.venueId)})}
+      if(req.method==='GET'&&url.pathname==='/api/auth/merchant-dashboard'){const user=await current(req);if(!user)return send(res,401,{error:'Inicia sesión'});if(user.role!=='merchant')return send(res,403,{error:'Solo comercios'});return send(res,200,{user,venueAssigned:!!user.venueId})}
+      if(req.method==='GET'&&url.pathname==='/api/auth/client-dashboard'){const user=await current(req);if(!user)return send(res,401,{error:'Inicia sesión'});if(user.role!=='client')return send(res,403,{error:'Solo clientes'});return send(res,200,{user})}
+      return send(res,404,{error:'Not found'});
+    }catch(e){console.error('Auth operation',String(e.message).slice(0,100));return send(res,/registrado|inválid|incorrectas|grande|JSON/i.test(String(e.message))?400:503,{error:String(e.message).slice(0,180)})}
+  }
   if(req.method==='GET'&&url.pathname.startsWith('/api/venue-media/')&&/^[0-9a-f-]{36}$/.test(url.pathname.split('/').pop())){
     try{const item=await readVenueMedia(url.pathname.split('/').pop());if(!item)return send(res,404,{error:'Image not found'});res.writeHead(200,{'content-type':item.content_type,'cache-control':'public, max-age=86400','x-content-type-options':'nosniff'});return res.end(item.bytes)}catch(e){console.error('Venue media read',e.message);return send(res,503,{error:'Media storage unavailable'})}
   }
