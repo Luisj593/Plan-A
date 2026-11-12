@@ -27,6 +27,7 @@ const server=http.createServer(async(req,res)=>{
   for(const [k,v] of Object.entries(security))res.setHeader(k,v);
   const url=new URL(req.url,'http://localhost');
   if(req.method==='GET'&&url.pathname==='/super-admin'){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(await readFile(new URL('./super-admin.html',import.meta.url)))}
+  if(req.method==='GET'&&['/mi-cuenta','/mi-comercio'].includes(url.pathname)){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(await readFile(new URL('./my-session.html',import.meta.url)))}
   if(req.method==='GET'&&url.pathname==='/acceso'){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return res.end(await readFile(new URL('./login.html',import.meta.url)))}
   if(url.pathname.startsWith('/api/auth/')){
     const json=async()=>{let body='';for await(const chunk of req){body+=chunk;if(body.length>12000)throw Error('Solicitud demasiado grande')}return JSON.parse(body)};
