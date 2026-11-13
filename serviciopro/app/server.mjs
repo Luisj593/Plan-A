@@ -31,4 +31,30 @@ if(req.method==='GET'&&path==='/api/orders'){const r=await pool.query('SELECT o.
 if(req.method==='POST'&&path==='/api/orders'){if(!['super_admin','admin','supervisor'].includes(user.role))return json(res,403,{error:'Forbidden'});const b=await read(req);const r=await pool.query('INSERT INTO sp_work_orders(company_id,customer_id,title,description) VALUES($1,$2,$3,$4) RETURNING id,title,status',[user.companyId,required(b.customerId,'customerId'),required(b.title,'title'),b.description||null]);return json(res,201,r.rows[0])}
 return json(res,404,{error:'Not found'});
 }catch(e){if(e.code==='23503')return json(res,400,{error:'Customer not found in this company'});if(e.code==='23505')return json(res,409,{error:'Duplicate record'});console.error(e.message);sendError(res,e)}});
-server.listen(PORT,()=>console.log('ServicioPro listening on',PORT));
+async function initializeAdmin(){
+  const client=await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('CREATE EXTENSION IF NOT EXISTS pgcrypto');
+    await client.query(`CREATE TABLE IF NOT EXISTS sp_companies (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text NOT NULL, status text NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended')), created_at timestamptz NOT NULL DEFAULT now())`);
+    await client.query(`CREATE TABLE IF NOT EXISTS sp_users (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), company_id uuid NOT NULL REFERENCES sp_companies(id), email text NOT NULL, name text NOT NULL, role text NOT NULL CHECK (role IN ('admin','supervisor','technician')), created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(company_id,email), UNIQUE(company_id,id))`);
+    await client.query('ALTER TABLE sp_users ADD COLUMN IF NOT EXISTS password_hash text');
+    await client.query('ALTER TABLE sp_users DROP CONSTRAINT IF EXISTS sp_users_role_check');
+    await client.query(`ALTER TABLE sp_users ADD CONSTRAINT sp_users_role_check CHECK (role IN ('super_admin','admin','supervisor','technician'))`);
+    await client.query(`CREATE UNIQUE INDEX IF NOT EXISTS sp_single_super_admin_email ON sp_users (lower(email)) WHERE role='super_admin'`);
+    const email=process.env.BOOTSTRAP_ADMIN_EMAIL;
+    const password=process.env.BOOTSTRAP_ADMIN_PASSWORD;
+    if(email && password){
+      if(password.length<12)throw Error('Bootstrap password must have at least 12 characters');
+      const company=await client.query(`SELECT id FROM sp_companies WHERE name='ServicioPro' ORDER BY created_at LIMIT 1`);
+      const companyId=company.rows[0]?.id || (await client.query(`INSERT INTO sp_companies(name) VALUES('ServicioPro') RETURNING id`)).rows[0].id;
+      const hash=await bcrypt.hash(password,12);
+      const existing=await client.query('SELECT id FROM sp_users WHERE lower(email)=lower($1) LIMIT 1',[email]);
+      if(existing.rows.length){await client.query(`UPDATE sp_users SET company_id=$1,role='super_admin',name=$2,password_hash=$3 WHERE id=$4`,[companyId,'Luis Jiménez',hash,existing.rows[0].id]);}
+      else await client.query(`INSERT INTO sp_users(company_id,email,name,role,password_hash) VALUES($1,$2,$3,'super_admin',$4)`,[companyId,email.toLowerCase(),'Luis Jiménez',hash]);
+      console.log('ServicioPro administrator initialized');
+    }
+    await client.query('COMMIT');
+  } catch(e){await client.query('ROLLBACK');throw e} finally {client.release()}
+}
+initializeAdmin().then(()=>server.listen(PORT,()=>console.log('ServicioPro listening on',PORT))).catch(e=>{console.error('Database initialization failed:',e.message);process.exit(1)});
