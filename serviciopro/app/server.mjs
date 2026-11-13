@@ -20,7 +20,7 @@ if(req.method==='GET'&&path==='/health')return json(res,200,{status:'ok'});
 if(req.method==='GET'&&path==='/'){const html=await readFile(new URL('./public/index.html',import.meta.url));res.writeHead(200,{'content-type':'text/html; charset=utf-8','x-content-type-options':'nosniff'});return res.end(html);}
 if(req.method==='POST'&&path==='/api/register'){const b=await read(req),company=required(b.company,'company'),name=required(b.name,'name'),email=required(b.email,'email').toLowerCase(),password=b.password;
 if(!/^\S+@\S+\.\S+$/.test(email)||typeof password!=='string'||password.length<12)return json(res,400,{error:'Valid email and 12+ character password required'});
-const client=await pool.connect();try{await client.query('BEGIN');const c=await client.query('INSERT INTO sp_companies(name) VALUES($1) RETURNING id',[company]);const hash=await bcrypt.hash(password,12);const u=await client.query("INSERT INTO sp_users(company_id,email,name,role,password_hash) VALUES($1,$2,$3,'admin',$4) RETURNING id",[c.rows[0].id,email,name,hash]);await client.query('COMMIT');return json(res,201,{companyId:c.rows[0].id,userId:u.rows[0].id})}catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}}
+const client=await pool.connect();try{await client.query('BEGIN');const c=await client.query('INSERT INTO sp_companies(name) VALUES($1) RETURNING id',[company]);const hash=passwordHash;const u=await client.query("INSERT INTO sp_users(company_id,email,name,role,password_hash) VALUES($1,$2,$3,'admin',$4) RETURNING id",[c.rows[0].id,email,name,hash]);await client.query('COMMIT');return json(res,201,{companyId:c.rows[0].id,userId:u.rows[0].id})}catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}}
 if(req.method==='POST'&&path==='/api/login'){const b=await read(req);const r=await pool.query('SELECT id,company_id,role,password_hash FROM sp_users WHERE email=$1 AND company_id=$2',[required(b.email,'email').toLowerCase(),required(b.companyId,'companyId')]);if(!r.rows[0]||!await bcrypt.compare(String(b.password||''),r.rows[0].password_hash))return json(res,401,{error:'Invalid credentials'});const u=r.rows[0];return json(res,200,{token:jwt.sign({userId:u.id,companyId:u.company_id,role:u.role},SECRET,{expiresIn:'8h',algorithm:'HS256'})})}
 if(!path.startsWith('/api/'))return json(res,404,{error:'Not found'});
 const user=auth(req);
@@ -43,9 +43,9 @@ async function initializeAdmin(){
     await client.query(`ALTER TABLE sp_users ADD CONSTRAINT sp_users_role_check CHECK (role IN ('super_admin','admin','supervisor','technician'))`);
     await client.query(`CREATE UNIQUE INDEX IF NOT EXISTS sp_single_super_admin_email ON sp_users (lower(email)) WHERE role='super_admin'`);
     const email=process.env.BOOTSTRAP_ADMIN_EMAIL;
-    const password=process.env.BOOTSTRAP_ADMIN_PASSWORD;
-    if(email && password){
-      if(password.length<12)throw Error('Bootstrap password must have at least 12 characters');
+    const passwordHash=process.env.BOOTSTRAP_ADMIN_HASH;
+    if(email && passwordHash){
+      if(!/^\$2[aby]\$1[012]\$/.test(passwordHash))throw Error('Invalid bootstrap bcrypt hash');
       const company=await client.query(`SELECT id FROM sp_companies WHERE name='ServicioPro' ORDER BY created_at LIMIT 1`);
       const companyId=company.rows[0]?.id || (await client.query(`INSERT INTO sp_companies(name) VALUES('ServicioPro') RETURNING id`)).rows[0].id;
       const hash=await bcrypt.hash(password,12);
